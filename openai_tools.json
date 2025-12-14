@@ -28,6 +28,50 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Createpost",
+        "operationId": "createPost_posts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/posts/{id}": {
@@ -72,18 +116,19 @@
         }
       }
     },
-    "/post": {
+    "/users": {
       "post": {
         "tags": [
-          "posts"
+          "posts",
+          "users"
         ],
-        "summary": "Createpost",
-        "operationId": "createPost_post_post",
+        "summary": "Createuser",
+        "operationId": "createUser_users_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/postCreate"
+                "$ref": "#/components/schemas/userCreate"
               }
             }
           },
@@ -94,9 +139,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/postResponse"
-                }
+                "schema": {}
               }
             }
           },
@@ -219,6 +262,35 @@
           "created_at"
         ],
         "title": "postResponse"
+      },
+      "userCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "firstname": {
+            "type": "string",
+            "title": "Firstname"
+          },
+          "lastname": {
+            "type": "string",
+            "title": "Lastname"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "firstname",
+          "lastname"
+        ],
+        "title": "userCreate"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   },

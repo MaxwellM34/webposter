@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, File, UploadFile, Form 
-from typing import Optional
-from fastapi import FastAPI, HTTPException
-from app.models.schemas import postCreate, postResponse
+from fastapi import APIRouter, HTTPException, Depends
+from app.models.schemas import postCreate, postResponse, userCreate
 from app.models.posts import Post
+from app.models.user import User
+from app.auth.authenticate import authenticate
+
 
 
 router = APIRouter(prefix='', tags=['posts'])
@@ -21,11 +22,25 @@ async def getPost(id: int):
     return post
 
 
-@router.post("/post",  response_model=postResponse)
-async def createPost(post: postCreate):
+@router.post("/posts", response_model=postResponse)
+async def createPost(post: postCreate, user=Depends(authenticate) ):
     newPost = await Post.create(
         caption=post.caption,
         content=post.content
     )
     return newPost
 
+   
+@router.post("/users", tags=["users"])
+async def createUser(user: userCreate):
+    newUser = await User.create(
+        email=user.email,
+        firstname=user.firstname,
+        lastname=user.lastname
+    )
+    return  newUser
+
+        
+
+
+   

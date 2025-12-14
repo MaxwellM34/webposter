@@ -1,3 +1,3 @@
-from app.models.schemas import postCreate, postResponse
+from app.models.schemas import postCreate, postResponse, userCreate
 
-__all__ = ["postCreate", "postResponse"]
+__all__ = ["postCreate", "postResponse", "userCreate"]
