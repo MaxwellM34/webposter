@@ -1,4 +1,5 @@
 from .user import User
-from .posts import Post
+from .posts import Post, Upload
 
-__all__ = ['User', 'Post']
+
+__all__ = ['User', 'Post', 'Upload']

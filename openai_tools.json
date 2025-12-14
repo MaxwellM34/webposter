@@ -156,6 +156,72 @@
         }
       }
     },
+    "/upload": {
+      "post": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Upload file",
+        "operationId": "uploadFile_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_uploadFile_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed": {
+      "get": {
+        "tags": [
+          "posts"
+        ],
+        "summary": "Get feed",
+        "operationId": "get_feed_feed_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UploadOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Feed Feed Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Root",
@@ -175,6 +241,25 @@
   },
   "components": {
     "schemas": {
+      "Body_uploadFile_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_uploadFile_upload_post"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -187,6 +272,66 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "UploadOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "file_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Type"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caption",
+          "url",
+          "file_type",
+          "file_name",
+          "created_at"
+        ],
+        "title": "UploadOut"
       },
       "ValidationError": {
         "properties": {

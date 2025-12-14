@@ -10,5 +10,7 @@ class User(models.Model):
 
     disabled = fields.BooleanField(default=False)
 
-    class Meta:
+    class Meta: #type: ignore
         table = 'users'
+
+    

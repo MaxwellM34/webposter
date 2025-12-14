@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from tortoise import Tortoise
-from app.config import Config
+from config import Config
 from app.openai import write_openai_schema
 from app.routers.pablo import router as pablo_router
 
