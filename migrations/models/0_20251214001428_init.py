@@ -5,8 +5,9 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
     return """
         CREATE TABLE IF NOT EXISTS "post" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "title" VARCHAR(255) NOT NULL,
-    "content" TEXT NOT NULL
+    "caption" VARCHAR(255) NOT NULL,
+    "content" TEXT NOT NULL,
+    "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS "aerich" (
     "id" SERIAL NOT NULL PRIMARY KEY,
