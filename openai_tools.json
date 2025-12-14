@@ -28,23 +28,26 @@
             }
           }
         }
-      },
-      "post": {
+      }
+    },
+    "/posts/{id}": {
+      "get": {
         "tags": [
           "posts"
         ],
-        "summary": "Createpost",
-        "operationId": "createPost_posts_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/postCreate"
-              }
+        "summary": "Getpost",
+        "operationId": "getPost_posts__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
             }
-          },
-          "required": true
-        },
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -69,24 +72,23 @@
         }
       }
     },
-    "/posts/{id}": {
-      "get": {
+    "/post": {
+      "post": {
         "tags": [
           "posts"
         ],
-        "summary": "Getpost",
-        "operationId": "getPost_posts__id__get",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Id"
+        "summary": "Createpost",
+        "operationId": "createPost_post_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postCreate"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
