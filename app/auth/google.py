@@ -2,7 +2,7 @@ from fastapi.security import HTTPBearer
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from app.models.user import User
-from config import Config
+from app.config import Config
 
 bearer = HTTPBearer(auto_error=False)
 req = requests.Request()

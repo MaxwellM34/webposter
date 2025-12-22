@@ -210,11 +210,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/UploadOut"
-                  },
-                  "type": "array",
-                  "title": "Response Get Feed Feed Get"
+                  "$ref": "#/components/schemas/FeedResponse"
                 }
               }
             }
@@ -260,6 +256,97 @@
         ],
         "title": "Body_uploadFile_upload_post"
       },
+      "FeedPost": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "file_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Type"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "is_owner": {
+            "type": "boolean",
+            "title": "Is Owner"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "caption",
+          "url",
+          "file_type",
+          "file_name",
+          "created_at",
+          "is_owner",
+          "email"
+        ],
+        "title": "FeedPost"
+      },
+      "FeedResponse": {
+        "properties": {
+          "posts": {
+            "items": {
+              "$ref": "#/components/schemas/FeedPost"
+            },
+            "type": "array",
+            "title": "Posts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "posts"
+        ],
+        "title": "FeedResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -278,6 +365,10 @@
           "id": {
             "type": "integer",
             "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
           },
           "caption": {
             "type": "string",
@@ -325,6 +416,7 @@
         "type": "object",
         "required": [
           "id",
+          "user_id",
           "caption",
           "url",
           "file_type",

@@ -9,6 +9,7 @@ class Post(models.Model):
 
 class Upload(models.Model):
     id = fields.IntField(pk=True)
+    user_id = fields.IntField()
     caption = fields.TextField()
     url = fields.TextField(null=True)
     file_type = fields.CharField(max_length=255, null=True)

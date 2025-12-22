@@ -2,10 +2,12 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from app.models import User, Post, Upload
 from app.auth.authenticate import authenticate
 from datetime import datetime
-from pathlib import Path
+import os
 import shutil
-from uuid import uuid4
+import tempfile
 from pydantic import BaseModel
+from app.images import imagekit
+from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 
 
 router = APIRouter(prefix='', tags=['posts'])
@@ -41,6 +43,7 @@ class PostOut(BaseModel):
 
 class UploadOut(BaseModel):
     id: int
+    user_id: int
     caption: str
     url: str | None
     file_type: str | None
@@ -49,6 +52,22 @@ class UploadOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class FeedPost(BaseModel):
+    id: int
+    user_id: int
+    caption: str
+    url: str | None
+    file_type: str | None
+    file_name: str | None
+    created_at: datetime
+    is_owner: bool
+    email: str
+
+
+class FeedResponse(BaseModel):
+    posts: list[FeedPost]
 
 
 
@@ -89,40 +108,80 @@ async def createUser(user: userCreate):
 @router.post("/upload", response_model=UploadOut, summary="Upload file")
 async def uploadFile(
     file: UploadFile = File(...),
-    caption: str = Form("")
+    caption: str = Form(""),
 ):
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="Missing filename")
+    temp_file_path: str | None = None
 
-    upload_dir = Path("uploads")
-    upload_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="Missing filename")
 
-    original_name = Path(file.filename).name
-    ext = Path(original_name).suffix
-    stored_name = f"{uuid4().hex}{ext}"
-    dest_path = upload_dir / stored_name
+        _, ext = os.path.splitext(file.filename)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_file:
+            temp_file_path = temp_file.name
+            shutil.copyfileobj(file.file, temp_file)
 
-    with dest_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        with open(temp_file_path, "rb") as upload_fp:
+            upload_result = imagekit.upload_file(
+                file=upload_fp,
+                file_name=file.filename,
+                options=UploadFileRequestOptions(
+                    use_unique_file_name=True,
+                    tags=["backend-upload"],
+                ),
+            )
 
-    content_type = file.content_type or "application/octet-stream"
+        if upload_result.response_metadata.http_status_code != 200:
+            raise HTTPException(status_code=502, detail="ImageKit upload failed")
 
-    upload = await Upload.create(
-        caption=caption,
-        url=f"/uploads/{stored_name}",
-        file_type=content_type,
-        file_name=original_name,
-    )
-    await file.close()
-    return upload
+        upload = await Upload.create(
+            user_id=user.id,
+            caption=caption,
+            url=upload_result.url,
+            file_type="video" if (file.content_type or "").startswith("video/") else "image",
+            file_name=upload_result.name,
+        )
+        return upload
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if temp_file_path and os.path.exists(temp_file_path):
+            os.unlink(temp_file_path)
+        try:
+            file.file.close()
+        except Exception:
+            pass
 
 @router.get(
     "/feed",
-    response_model=list[UploadOut],
+    response_model=FeedResponse,
     summary="Get feed",
 )
-async def get_feed():
-    return await Upload.all().order_by("-created_at")
+async def get_feed(
+):
+    uploads = await Upload.all().order_by("-created_at")
+    users = await User.all()
+    user_dict = {u.id: u.email for u in users}
+
+    posts_data: list[FeedPost] = []
+    for upload in uploads:
+        posts_data.append(
+            FeedPost(
+                id=upload.id,
+                user_id=upload.user_id,
+                caption=upload.caption,
+                url=upload.url,
+                file_type=upload.file_type,
+                file_name=upload.file_name,
+                created_at=upload.created_at,
+                is_owner=upload.user_id == user.id,
+                email=user_dict.get(upload.user_id, "Unknown"),
+            )
+        )
+
+    return FeedResponse(posts=posts_data)
     
 
 
